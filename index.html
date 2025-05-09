@@ -1,22 +1,48 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Udemy Course Picker</title>
+  <meta charset="UTF-8">
+  <title>Udemy Course Spinner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel@2.7.0/Winwheel.min.js"></script>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
-    #course { margin-top: 30px; min-height: 150px; }
-    button { padding: 12px 25px; font-size: 16px; cursor: pointer; }
-    .course-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #ccc; display: inline-block; width: 320px; }
-    img { width: 100%; border-radius: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+      padding: 50px;
+    }
+    canvas {
+      margin: 20px auto;
+      display: block;
+    }
+    #spinButton {
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .course-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+      display: inline-block;
+      width: 320px;
+      margin-top: 20px;
+    }
+    .course-card img {
+      width: 100%;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🎯 Spin to Pick a Course</h1>
-  <button onclick="pickCourse()">Pick One!</button>
+  <h1>🎯 Spin to Pick a Udemy Course</h1>
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <button id="spinButton">Spin the Wheel!</button>
 
-  <div id="course"><p style="color:gray;">Click the button to get started...</p></div>
+  <div id="course"></div>
 
   <script>
     const courses = [
@@ -57,23 +83,40 @@
       }
     ];
 
-    function pickCourse() {
-      document.getElementById('course').innerHTML = `
-        <p style="font-size:18px; font-weight:bold;">🔄 Spinning...</p>
-      `;
+    const segments = courses.map(course => ({
+      fillStyle: '#' + Math.floor(Math.random()*16777215).toString(16),
+      text: course.title
+    }));
 
-      setTimeout(() => {
-        const selected = courses[Math.floor(Math.random() * courses.length)];
+    const theWheel = new Winwheel({
+      'canvasId': 'canvas',
+      'numSegments': segments.length,
+      'segments': segments,
+      'animation': {
+        'type': 'spinToStop',
+        'duration': 5,
+        'spins': 8,
+        'callbackFinished': displayCourse
+      }
+    });
+
+    document.getElementById('spinButton').addEventListener('click', () => {
+      theWheel.startAnimation();
+    });
+
+    function displayCourse(indicatedSegment) {
+      const course = courses.find(c => c.title === indicatedSegment.text);
+      if (course) {
         document.getElementById('course').innerHTML = `
           <div class="course-card">
-            <img src="${selected.image}" alt="${selected.title}">
-            <h2>${selected.title}</h2>
-            <p>${selected.description}</p>
-            <p><strong>Price: ${selected.price}</strong></p>
-            <a href="${selected.link}" target="_blank"><button>Enroll Now</button></a>
+            <img src="${course.image}" alt="${course.title}">
+            <h2>${course.title}</h2>
+            <p>${course.description}</p>
+            <p><strong>Price: ${course.price}</strong></p>
+            <a href="${course.link}" target="_blank"><button>Enroll Now</button></a>
           </div>
         `;
-      }, 1500);
+      }
     }
   </script>
 
