@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Udemy Course Picker</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f4f4; }
+    #course { margin-top: 30px; min-height: 150px; }
+    button { padding: 12px 25px; font-size: 16px; cursor: pointer; }
+    .course-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px #ccc; display: inline-block; width: 320px; }
+    img { width: 100%; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Spin to Pick a Course</h1>
+  <button onclick="pickCourse()">Pick One!</button>
+
+  <div id="course"><p style="color:gray;">Click the button to get started...</p></div>
+
+  <script>
+    const courses = [
+      {
+        title: "Python for Data Science and Machine Learning Bootcamp",
+        description: "Learn Python, NumPy, Pandas, Matplotlib, Seaborn, Scikit-Learn, Machine Learning & more.",
+        price: "$11.99",
+        link: "https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp/?aff_code=YOURCODE",
+        image: "https://img-c.udemycdn.com/course/240x135/903744_8eb2.jpg"
+      },
+      {
+        title: "The Web Developer Bootcamp 2023",
+        description: "Learn HTML, CSS, JS, Node, and more – from scratch to deployment.",
+        price: "$12.99",
+        link: "https://www.udemy.com/course/the-web-developer-bootcamp/?aff_code=YOURCODE",
+        image: "https://img-c.udemycdn.com/course/240x135/625204_436a_3.jpg"
+      },
+      {
+        title: "Microsoft Excel – Excel from Beginner to Advanced",
+        description: "Master Excel formulas, functions, and data analysis tools.",
+        price: "$10.99",
+        link: "https://www.udemy.com/course/microsoft-excel-2013-from-beginner-to-advanced-and-beyond/?aff_code=YOURCODE",
+        image: "https://img-c.udemycdn.com/course/240x135/951618_0839.jpg"
+      },
+      {
+        title: "The Complete Digital Marketing Guide",
+        description: "SEO, YouTube, Facebook Ads, Google Ads, Email & more.",
+        price: "$13.99",
+        link: "https://www.udemy.com/course/learn-digital-marketing-course/?aff_code=YOURCODE",
+        image: "https://img-c.udemycdn.com/course/240x135/914296_3670_8.jpg"
+      },
+      {
+        title: "JavaScript: Understanding the Weird Parts",
+        description: "An advanced JavaScript course for serious learners.",
+        price: "$11.99",
+        link: "https://www.udemy.com/course/understand-javascript/?aff_code=YOURCODE",
+        image: "https://img-c.udemycdn.com/course/240x135/364426_2991_6.jpg"
+      }
+    ];
+
+    function pickCourse() {
+      document.getElementById('course').innerHTML = `
+        <p style="font-size:18px; font-weight:bold;">🔄 Spinning...</p>
+      `;
+
+      setTimeout(() => {
+        const selected = courses[Math.floor(Math.random() * courses.length)];
+        document.getElementById('course').innerHTML = `
+          <div class="course-card">
+            <img src="${selected.image}" alt="${selected.title}">
+            <h2>${selected.title}</h2>
+            <p>${selected.description}</p>
+            <p><strong>Price: ${selected.price}</strong></p>
+            <a href="${selected.link}" target="_blank"><button>Enroll Now</button></a>
+          </div>
+        `;
+      }, 1500);
+    }
+  </script>
+
+</body>
+</html>
