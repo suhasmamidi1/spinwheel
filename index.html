@@ -1,125 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spin to Pick a Udemy Course</title>
+  <title>Udemy Course Spinner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel/Winwheel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel@2.7.0/Winwheel.min.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       text-align: center;
-      background: #f4f4f4;
-      padding: 20px;
+      background-color: #f8f9fa;
+      padding: 30px;
+    }
+    h1 {
+      font-size: 32px;
+      color: #212529;
     }
     canvas {
-      margin: 0 auto;
+      margin-top: 30px;
       display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
     #spinButton {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 16px;
       margin-top: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: white;
       cursor: pointer;
     }
-    .course-card {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #ccc;
-      display: inline-block;
-      width: 300px;
+    #course {
       margin-top: 30px;
+    }
+    .course-card {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 340px;
+      margin: 0 auto;
+      padding: 20px;
     }
     .course-card img {
       width: 100%;
-      border-radius: 4px;
+      border-radius: 6px;
+    }
+    .course-card h2 {
+      font-size: 20px;
+      margin-top: 15px;
+    }
+    .course-card p {
+      font-size: 14px;
+      color: #555;
+    }
+    .course-card a button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <h1>🎯 Spin to Pick a Course</h1>
-  <canvas id="canvas" width="400" height="400"></canvas>
-  <button id="spinButton">Spin the Wheel!</button>
+<h1>🎯 Spin to Pick a Udemy Course</h1>
+<canvas id="canvas" width="500" height="500"></canvas>
+<button id="spinButton">Spin the Wheel!</button>
 
-  <div id="course"></div>
+<div id="course"></div>
 
-  <script>
-    const courses = [
-      {
-        title: "Python for Data Science",
-        description: "Learn Python, NumPy, Pandas, Matplotlib & more.",
-        price: "$11.99",
-        link: "https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp/?aff_code=YOURCODE",
-        image: "https://img-c.udemycdn.com/course/240x135/903744_8eb2.jpg"
-      },
-      {
-        title: "Web Developer Bootcamp",
-        description: "Learn HTML, CSS, JS, Node from scratch.",
-        price: "$12.99",
-        link: "https://www.udemy.com/course/the-web-developer-bootcamp/?aff_code=YOURCODE",
-        image: "https://img-c.udemycdn.com/course/240x135/625204_436a_3.jpg"
-      },
-      {
-        title: "Excel from Beginner to Advanced",
-        description: "Master Excel formulas, functions, and charts.",
-        price: "$10.99",
-        link: "https://www.udemy.com/course/microsoft-excel-2013-from-beginner-to-advanced-and-beyond/?aff_code=YOURCODE",
-        image: "https://img-c.udemycdn.com/course/240x135/951618_0839.jpg"
-      },
-      {
-        title: "Digital Marketing Guide",
-        description: "SEO, Facebook Ads, Google Ads, Email Marketing.",
-        price: "$13.99",
-        link: "https://www.udemy.com/course/learn-digital-marketing-course/?aff_code=YOURCODE",
-        image: "https://img-c.udemycdn.com/course/240x135/914296_3670_8.jpg"
-      },
-      {
-        title: "Advanced JavaScript",
-        description: "In-depth JavaScript training for serious coders.",
-        price: "$11.99",
-        link: "https://www.udemy.com/course/understand-javascript/?aff_code=YOURCODE",
-        image: "https://img-c.udemycdn.com/course/240x135/364426_2991_6.jpg"
-      }
-    ];
-
-    const segments = courses.map(course => ({
-      text: course.title,
-      fillStyle: '#' + Math.floor(Math.random() * 16777215).toString(16)
-    }));
-
-    const theWheel = new Winwheel({
-      canvasId: 'canvas',
-      numSegments: segments.length,
-      segments: segments,
-      animation: {
-        type: 'spinToStop',
-        duration: 4,
-        spins: 6,
-        callbackFinished: showCourse
-      }
-    });
-
-    document.getElementById('spinButton').addEventListener('click', () => {
-      theWheel.startAnimation();
-    });
-
-    function showCourse(segment) {
-      const course = courses.find(c => c.title === segment.text);
-      if (course) {
-        document.getElementById('course').innerHTML = `
-          <div class="course-card">
-            <img src="${course.image}" alt="${course.title}">
-            <h2>${course.title}</h2>
-            <p>${course.description}</p>
-            <p><strong>Price: ${course.price}</strong></p>
-            <a href="${course.link}" target="_blank"><button>Enroll Now</button></a>
-          </div>
-        `;
-      }
+<script>
+  const courses = [
+    {
+      title: "Python for DS",
+      description: "Master Python, NumPy, Pandas, and ML techniques.",
+      price: "$11.99",
+      link: "https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp/?aff_code=YOURCODE",
+      image: "https://img-c.udemycdn.com/course/240x135/903744_8eb2.jpg"
+    },
+    {
+      title: "Web Dev Bootcamp",
+      description: "HTML, CSS, JS, Node, MongoDB & more.",
+      price: "$12.99",
+      link: "https://www.udemy.com/course/the-web-developer-bootcamp/?aff_code=YOURCODE",
+      image: "https://img-c.udemycdn.com/course/240x135/625204_436a_3.jpg"
+    },
+    {
+      title: "Excel Mastery",
+      description: "Beginner to advanced Excel functions and tools.",
+      price: "$10.99",
+      link: "https://www.udemy.com/course/microsoft-excel-2013-from-beginner-to-advanced-and-beyond/?aff_code=YOURCODE",
+      image: "https://img-c.udemycdn.com/course/240x135/951618_0839.jpg"
+    },
+    {
+      title: "Marketing 101",
+      description: "Intro to SEO, Ads, Email Marketing, and Funnels.",
+      price: "$13.99",
+      link: "https://www.udemy.com/course/learn-digital-marketing-course/?aff_code=YOURCODE",
+      image: "https://img-c.udemycdn.com/course/240x135/914296_3670_8.jpg"
+    },
+    {
+      title: "JavaScript Pro",
+      description: "Deep dive into JS scope, closures, and functions.",
+      price: "$11.99",
+      link: "https://www.udemy.com/course/understand-javascript/?aff_code=YOURCODE",
+      image: "https://img-c.udemycdn.com/course/240x135/364426_2991_6.jpg"
     }
-  </script>
+  ];
+
+  const segments = [
+    { text: "Python for DS", fillStyle: "#28a745" },
+    { text: "Web Dev Bootcamp", fillStyle: "#007bff" },
+    { text: "Excel Mastery", fillStyle: "#ffc107" },
+    { text: "Marketing 101", fillStyle: "#e83e8c" },
+    { text: "JavaScript Pro", fillStyle: "#6f42c1" }
+  ];
+
+  const theWheel = new Winwheel({
+    canvasId: 'canvas',
+    numSegments: segments.length,
+    segments: segments,
+    textFontSize: 18,
+    textOrientation: 'horizontal',
+    textAlignment: 'center',
+    animation: {
+      type: 'spinToStop',
+      duration: 5,
+      spins: 6,
+      callbackFinished: showCourse
+    }
+  });
+
+  document.getElementById('spinButton').addEventListener('click', () => {
+    theWheel.startAnimation();
+  });
+
+  function showCourse(segment) {
+    const course = courses.find(c => c.title === segment.text);
+    if (course) {
+      document.getElementById('course').innerHTML = `
+        <div class="course-card">
+          <img src="${course.image}" alt="${course.title}">
+          <h2>${course.title}</h2>
+          <p>${course.description}</p>
+          <p><strong>Price: ${course.price}</strong></p>
+          <a href="${course.link}" target="_blank"><button>Enroll Now</button></a>
+        </div>
+      `;
+    }
+  }
+</script>
 
 </body>
 </html>
