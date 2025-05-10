@@ -1,180 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Udemy Course Spinner</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel@2.7.0/Winwheel.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect the Dots - Level Game</title>
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      text-align: center;
-      background-color: #f8f9fa;
-      padding: 30px;
-    }
-    h1 {
-      font-size: 32px;
-      color: #212529;
-    }
-    #wheel-container {
-      position: relative;
-      width: 500px;
-      margin: 30px auto 10px;
-    }
-    #pointer {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 25px solid red;
-      z-index: 10;
-    }
-    canvas {
-      display: block;
-      margin: 0 auto;
-    }
-    #spinButton {
-      padding: 12px 24px;
-      font-size: 16px;
-      margin-top: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: white;
-      cursor: pointer;
-    }
-    #course {
-      margin-top: 30px;
-    }
-    .course-card {
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      width: 340px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .course-card img {
-      width: 100%;
-      border-radius: 6px;
-    }
-    .course-card h2 {
-      font-size: 20px;
-      margin-top: 15px;
-    }
-    .course-card p {
-      font-size: 14px;
-      color: #555;
-    }
-    .course-card a button {
-      margin-top: 12px;
-      padding: 10px 20px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+    body { font-family: sans-serif; text-align: center; }
+    canvas { border: 2px solid #444; margin-top: 20px; cursor: crosshair; }
+    #nextBtn { margin-top: 15px; padding: 10px 20px; font-size: 16px; display: none; }
   </style>
 </head>
 <body>
+  <h2>Connect the Dots (No Crossing Lines)</h2>
+  <canvas id="gameCanvas" width="400" height="400"></canvas><br>
+  <button id="nextBtn">Next Level</button>
 
-<h1>🎯 Spin to Pick a Udemy Course</h1>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const nextBtn = document.getElementById('nextBtn');
 
-<div id="wheel-container">
-  <div id="pointer"></div>
-  <canvas id="canvas" width="500" height="500"></canvas>
-</div>
+    let dots = [], lines = [], selected = null, level = 0;
 
-<button id="spinButton">Spin the Wheel!</button>
-
-<div id="course"></div>
-
-<script>
-  const courses = [
-    {
-      title: "Python for DS",
-      description: "Master Python, NumPy, Pandas, and ML techniques.",
-      price: "$11.99",
-      link: "https://www.udemy.com/course/python-for-data-science-and-machine-learning-bootcamp/?aff_code=YOURCODE",
-      image: "https://img-c.udemycdn.com/course/240x135/903744_8eb2.jpg"
-    },
-    {
-      title: "Web Dev Bootcamp",
-      description: "HTML, CSS, JS, Node, MongoDB & more.",
-      price: "$12.99",
-      link: "https://www.udemy.com/course/the-web-developer-bootcamp/?aff_code=YOURCODE",
-      image: "https://img-c.udemycdn.com/course/240x135/625204_436a_3.jpg"
-    },
-    {
-      title: "Excel Mastery",
-      description: "Beginner to advanced Excel functions and tools.",
-      price: "$10.99",
-      link: "https://www.udemy.com/course/microsoft-excel-2013-from-beginner-to-advanced-and-beyond/?aff_code=YOURCODE",
-      image: "https://img-c.udemycdn.com/course/240x135/951618_0839.jpg"
-    },
-    {
-      title: "Marketing 101",
-      description: "Intro to SEO, Ads, Email Marketing, and Funnels.",
-      price: "$13.99",
-      link: "https://www.udemy.com/course/learn-digital-marketing-course/?aff_code=YOURCODE",
-      image: "https://img-c.udemycdn.com/course/240x135/914296_3670_8.jpg"
-    },
-    {
-      title: "JavaScript Pro",
-      description: "Deep dive into JS scope, closures, and functions.",
-      price: "$11.99",
-      link: "https://www.udemy.com/course/understand-javascript/?aff_code=YOURCODE",
-      image: "https://img-c.udemycdn.com/course/240x135/364426_2991_6.jpg"
+    function generateDots(level) {
+      const colors = ['red', 'blue', 'green', 'purple', 'orange'];
+      const numPairs = 2 + level;
+      dots = [];
+      for (let i = 0; i < numPairs; i++) {
+        const color = colors[i % colors.length];
+        dots.push({ x: rand(50, 350), y: rand(50, 350), color, id: i });
+        dots.push({ x: rand(50, 350), y: rand(50, 350), color, id: i });
+      }
+      lines = [];
     }
-  ];
 
-  const segments = [
-    { text: "Python for DS", fillStyle: "#28a745" },
-    { text: "Web Dev Bootcamp", fillStyle: "#007bff" },
-    { text: "Excel Mastery", fillStyle: "#ffc107" },
-    { text: "Marketing 101", fillStyle: "#e83e8c" },
-    { text: "JavaScript Pro", fillStyle: "#6f42c1" }
-  ];
-
-  const theWheel = new Winwheel({
-    canvasId: 'canvas',
-    numSegments: segments.length,
-    segments: segments,
-    textFontSize: 18,
-    textOrientation: 'horizontal',
-    textAlignment: 'center',
-    animation: {
-      type: 'spinToStop',
-      duration: 5,
-      spins: 6,
-      callbackFinished: showCourse
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-  });
 
-  document.getElementById('spinButton').addEventListener('click', () => {
-    theWheel.startAnimation();
-  });
-
-  function showCourse(segment) {
-    const course = courses.find(c => c.title === segment.text);
-    if (course) {
-      document.getElementById('course').innerHTML = `
-        <div class="course-card">
-          <img src="${course.image}" alt="${course.title}">
-          <h2>${course.title}</h2>
-          <p>${course.description}</p>
-          <p><strong>Price: ${course.price}</strong></p>
-          <a href="${course.link}" target="_blank"><button>Enroll Now</button></a>
-        </div>
-      `;
+    function drawGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw lines
+      for (let l of lines) {
+        ctx.beginPath();
+        ctx.moveTo(l.a.x, l.a.y);
+        ctx.lineTo(l.b.x, l.b.y);
+        ctx.strokeStyle = l.a.color;
+        ctx.lineWidth = 5;
+        ctx.stroke();
+      }
+      // Draw dots
+      for (let d of dots) {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 10, 0, Math.PI * 2);
+        ctx.fillStyle = d.color;
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.stroke();
+      }
     }
-  }
-</script>
 
+    function isIntersect(a1, a2, b1, b2) {
+      function ccw(p1, p2, p3) {
+        return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+      }
+      return (ccw(a1, b1, b2) !== ccw(a2, b1, b2)) && (ccw(a1, a2, b1) !== ccw(a1, a2, b2));
+    }
+
+    function checkWin() {
+      if (lines.length !== dots.length / 2) return false;
+      for (let i = 0; i < lines.length; i++) {
+        for (let j = i + 1; j < lines.length; j++) {
+          if (isIntersect(lines[i].a, lines[i].b, lines[j].a, lines[j].b)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const clicked = dots.find(d => Math.hypot(d.x - x, d.y - y) < 15);
+      if (!clicked) return;
+
+      if (!selected) {
+        selected = clicked;
+      } else if (selected !== clicked && selected.color === clicked.color && selected.id === clicked.id) {
+        // Check intersection with existing lines
+        const newLine = { a: selected, b: clicked };
+        for (let l of lines) {
+          if (isIntersect(newLine.a, newLine.b, l.a, l.b)) {
+            alert("Lines cannot cross!");
+            selected = null;
+            return;
+          }
+        }
+        lines.push(newLine);
+        selected = null;
+        if (checkWin()) {
+          nextBtn.style.display = 'inline-block';
+        }
+      } else {
+        selected = clicked;
+      }
+
+      drawGame();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      level++;
+      nextBtn.style.display = 'none';
+      generateDots(level);
+      drawGame();
+    });
+
+    generateDots(level);
+    drawGame();
+  </script>
 </body>
 </html>
