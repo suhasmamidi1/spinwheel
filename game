@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect the Dots - Level Game</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; }
+    canvas { border: 2px solid #444; margin-top: 20px; cursor: crosshair; }
+    #nextBtn { margin-top: 15px; padding: 10px 20px; font-size: 16px; display: none; }
+  </style>
+</head>
+<body>
+  <h2>Connect the Dots (No Crossing Lines)</h2>
+  <canvas id="gameCanvas" width="400" height="400"></canvas><br>
+  <button id="nextBtn">Next Level</button>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let dots = [], lines = [], selected = null, level = 0;
+
+    function generateDots(level) {
+      const colors = ['red', 'blue', 'green', 'purple', 'orange'];
+      const numPairs = 2 + level;
+      dots = [];
+      for (let i = 0; i < numPairs; i++) {
+        const color = colors[i % colors.length];
+        dots.push({ x: rand(50, 350), y: rand(50, 350), color, id: i });
+        dots.push({ x: rand(50, 350), y: rand(50, 350), color, id: i });
+      }
+      lines = [];
+    }
+
+    function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function drawGame() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw lines
+      for (let l of lines) {
+        ctx.beginPath();
+        ctx.moveTo(l.a.x, l.a.y);
+        ctx.lineTo(l.b.x, l.b.y);
+        ctx.strokeStyle = l.a.color;
+        ctx.lineWidth = 5;
+        ctx.stroke();
+      }
+      // Draw dots
+      for (let d of dots) {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 10, 0, Math.PI * 2);
+        ctx.fillStyle = d.color;
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.stroke();
+      }
+    }
+
+    function isIntersect(a1, a2, b1, b2) {
+      function ccw(p1, p2, p3) {
+        return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+      }
+      return (ccw(a1, b1, b2) !== ccw(a2, b1, b2)) && (ccw(a1, a2, b1) !== ccw(a1, a2, b2));
+    }
+
+    function checkWin() {
+      if (lines.length !== dots.length / 2) return false;
+      for (let i = 0; i < lines.length; i++) {
+        for (let j = i + 1; j < lines.length; j++) {
+          if (isIntersect(lines[i].a, lines[i].b, lines[j].a, lines[j].b)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const clicked = dots.find(d => Math.hypot(d.x - x, d.y - y) < 15);
+      if (!clicked) return;
+
+      if (!selected) {
+        selected = clicked;
+      } else if (selected !== clicked && selected.color === clicked.color && selected.id === clicked.id) {
+        // Check intersection with existing lines
+        const newLine = { a: selected, b: clicked };
+        for (let l of lines) {
+          if (isIntersect(newLine.a, newLine.b, l.a, l.b)) {
+            alert("Lines cannot cross!");
+            selected = null;
+            return;
+          }
+        }
+        lines.push(newLine);
+        selected = null;
+        if (checkWin()) {
+          nextBtn.style.display = 'inline-block';
+        }
+      } else {
+        selected = clicked;
+      }
+
+      drawGame();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      level++;
+      nextBtn.style.display = 'none';
+      generateDots(level);
+      drawGame();
+    });
+
+    generateDots(level);
+    drawGame();
+  </script>
+</body>
+</html>
